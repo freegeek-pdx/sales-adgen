@@ -1,0 +1,59 @@
+<table width="100%"><tr><td bgcolor="#013E51" align="center">
+<table width="720" cellpadding="10" bgcolor="#FDF6EA">
+    <tr>
+        <th colspan="2">
+            <h1>{{ title }}</h1>
+        </th>
+    </tr>
+    {% if subtitle %}
+    <tr>
+        <td colspan="2">
+            <h3 align="center">{{ subtitle }}</h3>
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td colspan="2"><hr></td>
+    </tr>
+    <tr>
+        <td>
+            <ul>
+{{ details }}
+            </ul>
+            <h1 align="center">${{ price }}</h1>
+        </td>
+        <td width="350">
+            <a target="_blank" href="{{ image_url }}/closeup.jpg"><img src="{{ image_url }}/closeup_thumb.jpg"></a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <hr>
+            {{ additional_info|linebreaksbr }}
+        </td>
+    </tr>
+    {% block images %}
+    <tr>
+        <td align="center" colspan="2">
+            <a target="_blank" href="{{ image_url }}/front.jpg"><img src="{{ image_url }}/front_thumb.jpg"></a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="2">
+            <a target="_blank" href="{{ image_url }}/back.jpg"><img src="{{ image_url }}/back_thumb.jpg"></a>
+        </td>
+    </tr>
+    {% endblock %}
+    <tr>
+        <td colspan="2"><hr></td>
+    </tr>
+    <tr>
+        <td align="center">
+            {{ footer_text|linebreaksbr }}
+        </td>
+        <td align="right">
+            <a target="_blank" href="http://freegeek.org"><img src="{{ MEDIA_URL }}image/logo.jpg" width="200" height="200"></a>
+        </td>
+    </tr>
+</table>
+</td></tr></table>

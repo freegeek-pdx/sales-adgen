@@ -1,0 +1,28 @@
+{% extends "adgen/base.html" %}
+
+{% block content %}
+<div style="float: left; width: 220px;">
+    <form method="post" action=".">
+    {% for field in form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            <p><strong>{{ field.label_tag }}:</strong><br />
+            {{ field }}
+            </p>
+        </div>
+    {% endfor %}
+
+    <input type="submit" value="Submit">
+    {% csrf_token %}
+    </form>
+</div>
+
+{% if output %}
+<div style="float: right; width: 800px;">
+    {{ output }}
+
+    <h1>HTML:</h1>
+    <pre style="width: 700px; overflow: auto;">{{ output|force_escape }}</pre>
+</div>
+{% endif %}
+{% endblock %}

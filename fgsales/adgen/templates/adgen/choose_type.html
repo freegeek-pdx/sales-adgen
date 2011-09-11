@@ -1,0 +1,9 @@
+{% extends "adgen/base.html" %}
+
+{% block content %}
+<h1>Choose ad type:</h1>
+<h3><a href="{% url adgen.views.generate_listing "normal" %}">Normal</a></h3>
+<h3><a href="{% url adgen.views.generate_listing "server" %}">Server</a></h3>
+
+{% endblock %}
+

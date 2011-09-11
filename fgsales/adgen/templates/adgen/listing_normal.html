@@ -1,0 +1,12 @@
+{% extends "adgen/listing_base.html" %}
+
+{% block images %}
+    <tr>
+        <td align="center">
+            <a target="_blank" href="{{ image_url }}/front.jpg"><img src="{{ image_url }}/front_thumb.jpg"></a>
+        </td>
+        <td align="center">
+            <a target="_blank" href="{{ image_url }}/back.jpg"><img src="{{ image_url }}/back_thumb.jpg"></a>
+        </td>
+    </tr>
+{% endblock %}
