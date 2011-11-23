@@ -1,2 +1,3 @@
 fgsales/media/image/system/*
 fgsales/settings.py
+*.swp
