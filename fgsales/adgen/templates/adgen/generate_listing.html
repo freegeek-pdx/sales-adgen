@@ -8,6 +8,9 @@
             {{ field.errors }}
             <p><strong>{{ field.label_tag }}:</strong><br />
             {{ field }}
+            {% if field.help_text %}
+            <em style="font-size: .9em;">({{ field.help_text }})</em>  
+            {% endif %}
             </p>
         </div>
     {% endfor %}

@@ -31,7 +31,7 @@ images = {
 }
 
 class ListingForm(forms.Form):
-    system_id = forms.IntegerField(label='System ID')
+    system_id = forms.SlugField(label='Unique Identifier', help_text='Usually system ID')
     title = forms.CharField()
     subtitle = forms.CharField(required=False, help_text='Optional')
     price = forms.DecimalField()
