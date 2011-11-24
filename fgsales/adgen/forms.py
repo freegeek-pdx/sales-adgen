@@ -31,10 +31,10 @@ images = {
 }
 
 class ListingForm(forms.Form):
-    system_id = forms.SlugField(label='Unique Identifier', help_text='Usually system ID')
+    system_id = forms.SlugField(label='Directory Name', help_text='Use something unique, such as System ID')
     title = forms.CharField()
     subtitle = forms.CharField(required=False, help_text='Optional')
-    price = forms.DecimalField()
+    price = forms.DecimalField(help_text='Don\'t include dollar sign')
     details = forms.CharField(widget=forms.Textarea,
         help_text='Enter one detail per line')
     additional_info = forms.CharField(widget=forms.Textarea)
