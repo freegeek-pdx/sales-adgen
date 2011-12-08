@@ -1,5 +1,6 @@
 import os
 import urllib
+import urllib2
 import re
 
 from django import forms
@@ -7,6 +8,7 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 
 from PIL import Image
+from BeautifulSoup import BeautifulSoup
 
 base_initial_data = {
     'footer_text': 'this is default footer text',
@@ -17,21 +19,20 @@ initial_data = {
     'server': dict(base_initial_data),
 }
 
-images = {
-    'normal': (
-        ('back', 350),
-        ('closeup', 240),
-        ('front', 240),
-    ),
-    'server': (
-        ('back', 700),
-        ('closeup', 350),
-        ('front', 700),
-    )
-}
+server_images = (
+    ('back', 700),
+    ('feature', 350),
+    ('front', 700),
+)
+
+normal_images = (
+    ('feature', 350),
+    (None, 240),
+)
 
 class ListingForm(forms.Form):
-    system_id = forms.SlugField(label='Directory Name', help_text='Use something unique, such as System ID')
+    system_id = forms.SlugField(label='Directory Name',
+        help_text='Use something unique, such as System ID')
     title = forms.CharField()
     subtitle = forms.CharField(required=False, help_text='Optional')
     price = forms.DecimalField(help_text='Don\'t include dollar sign')
@@ -59,42 +60,82 @@ class ListingForm(forms.Form):
         )
 
     def fetch_images(self):
-        return _fetch_images(self.listing_type,
-            self.cleaned_data['system_id'],
-            self.cleaned_data['username'],
-            self.cleaned_data['refresh_images'])
+        system_id = self.cleaned_data['system_id']
+        local_path = os.path.join(settings.MEDIA_ROOT, 'image', 'system',
+            system_id)
+        remote_path = os.path.join(settings.BASE_IMAGES_URL,
+            '~%s' % self.cleaned_data['username'], 'system', system_id)
+
+        try:
+            os.makedirs(local_path)
+        except OSError:
+            pass
+
+        if self.listing_type == 'server':
+            self.images = fetch_server_images(remote_path, local_path,
+                self.cleaned_data['refresh_images'])
+        else:
+            self.images = fetch_normal_images(remote_path, local_path,
+                self.cleaned_data['refresh_images'])
 
     @property
     def image_url(self):
         return os.path.join(settings.MEDIA_URL, 'image', 'system',
-            str(self.cleaned_data['system_id']))
+            self.cleaned_data['system_id'])
 
-def _fetch_images(listing_type, system_id, username,
-        refresh_images=False):
 
-    local_path = os.path.join(settings.MEDIA_ROOT, 'image', 'system',
-        str(system_id))
-    remote_path = os.path.join('http://127.0.0.1/~%s'%username, 'system', str(system_id))
-    print remote_path
-
-    if not os.path.exists(local_path):
-        os.mkdir(local_path)
-
-    for fn, width in images[listing_type]:
-        local_filename = os.path.join(local_path, '%s.jpg' % fn)
+def fetch_server_images(remote_path, local_path, refresh):
+    for fn, width in server_images:
         remote_filename = os.path.join(remote_path, '%s.JPG' % fn)
+        local_filename = os.path.join(local_path, '%s.jpg' % fn)
 
-        if not os.path.exists(local_filename) or refresh_images:
-            try:
-                urllib.urlretrieve(remote_filename, local_filename)
-            except IOError:
-                urllib.urlretrieve(remote_filename.lower(), local_filename)
+        if not os.path.exists(local_filename) or refresh:
+            fetch_single_image(remote_filename, local_filename, width)
 
-            thumb_filename = os.path.join(local_path, '%s_thumb.jpg' % fn)
-            try:
-                original = Image.open(local_filename)
-                original.thumbnail((width, 1000), Image.ANTIALIAS)
-                original.save(thumb_filename, 'JPEG')
-            except IOError:
-                os.remove(local_filename)
+def fetch_normal_images(remote_path, local_path, refresh):
+    index = BeautifulSoup(urllib2.urlopen(remote_path))
+    widths = dict(normal_images)
+    images = []
+
+    for a in index('img', alt='[IMG]'):
+        fn = a.next.find('a')['href']
+
+        if fn.lower() == 'feature.jpg':
+            width = widths['feature']
+        else:
+            width = widths[None]
+
+        remote_filename = os.path.join(remote_path, fn)
+        local_filename = os.path.join(local_path, fn.lower())
+
+        if fn.lower() != 'feature.jpg':
+            images.append(os.path.splitext(fn.lower())[0])
+
+        if not os.path.exists(local_filename) or refresh:
+            fetch_single_image(remote_filename, local_filename, width)
+
+    return images
+
+def fetch_single_image(remote_filename, local_filename, width):
+    print remote_filename
+    print local_filename
+    print width
+    info = None
+    try:
+        _, info = urllib.urlretrieve(remote_filename, local_filename)
+    except:
+        pass
+
+    if not info or info.gettype() != 'image/jpeg':
+        urllib.urlretrieve(remote_filename.lower(), local_filename)
+
+    thumb_filename = os.path.join('%s_thumb.jpg' % os.path.splitext(
+        local_filename)[0])
+    try:
+        original = Image.open(local_filename)
+        original.thumbnail((width, 1000), Image.ANTIALIAS)
+        original.save(thumb_filename, 'JPEG')
+    except IOError:
+        os.remove(local_filename)
+
 

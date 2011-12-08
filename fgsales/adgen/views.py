@@ -11,11 +11,12 @@ def generate_listing(request, listing_type):
         username=username
     )
     context = {'form': form}
-    
+
     if request.POST and form.is_valid():
         form.fetch_images()
         output_context = dict(form.cleaned_data,
             image_url=request.build_absolute_uri(form.image_url),
+            system_images=form.images,
         )
         context['output'] = render_to_string(
             'adgen/listing_%s.html' % listing_type,
