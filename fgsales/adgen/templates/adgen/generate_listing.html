@@ -2,16 +2,16 @@
 
 {% block content %}
 <div style="float: left; width: 220px;">
+{{ form.non_field_errors }}
     <form method="post" action=".">
     {% for field in form %}
         <div class="fieldWrapper">
+            <p><strong>{{ field.label_tag }}:</strong></p>
             {{ field.errors }}
-            <p><strong>{{ field.label_tag }}:</strong><br />
             {{ field }}
             {% if field.help_text %}
             <em style="font-size: .9em;">({{ field.help_text }})</em>  
             {% endif %}
-            </p>
         </div>
     {% endfor %}
 

@@ -1,3 +1,4 @@
-fgsales/media/image/system/*
+fgsales/media/image/listings/*
 fgsales/settings.py
 *.swp
+*.pyc

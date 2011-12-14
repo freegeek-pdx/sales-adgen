@@ -23,7 +23,7 @@
             <h1 align="center">${{ price }}</h1>
         </td>
         <td width="350">
-            <a target="_blank" href="{{ image_url }}/feature.jpg"><img src="{{ image_url }}/feature_thumb.jpg"></a>
+            <a target="_blank" href="{{ image_url }}/feature.jpg" border="0"><img src="{{ image_url }}/feature_thumb.jpg" border="0"></a>
         </td>
     </tr>
     <tr>
@@ -35,12 +35,12 @@
     {% block images %}
     <tr>
         <td align="center" colspan="2">
-            <a target="_blank" href="{{ image_url }}/front.jpg"><img src="{{ image_url }}/front_thumb.jpg"></a>
+            <a target="_blank" href="{{ image_url }}/front.jpg" border="0"><img src="{{ image_url }}/front_thumb.jpg" border="0"></a>
         </td>
     </tr>
     <tr>
         <td align="center" colspan="2">
-            <a target="_blank" href="{{ image_url }}/back.jpg"><img src="{{ image_url }}/back_thumb.jpg"></a>
+            <a target="_blank" href="{{ image_url }}/back.jpg" border="0"><img src="{{ image_url }}/back_thumb.jpg" border="0"></a>
         </td>
     </tr>
     {% endblock %}
@@ -52,7 +52,7 @@
             {{ footer_text|linebreaksbr }}
         </td>
         <td align="right">
-            <a target="_blank" href="http://freegeek.org"><img src="{{ MEDIA_URL }}image/logo.jpg" width="200" height="200"></a>
+            <a target="_blank" href="http://freegeek.org" border="0"><img src="{{ MEDIA_URL }}image/logo.jpg" width="200" height="200" border="0"></a>
         </td>
     </tr>
 </table>

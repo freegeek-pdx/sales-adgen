@@ -52,6 +52,13 @@ class ListingForm(forms.Form):
         super(ListingForm, self).__init__(
             initial=initial, *args, **kwargs)
 
+    def clean(self):
+        try:
+            self.fetch_images()
+        except urllib2.HTTPError:
+            raise forms.ValidationError('Cannot fetch images from directory')
+        return self.cleaned_data
+
     def clean_details(self):
         return mark_safe(
             '\n'.join('<li>%s</li>' % l for l in re.sub(
@@ -61,10 +68,10 @@ class ListingForm(forms.Form):
 
     def fetch_images(self):
         system_id = self.cleaned_data['system_id']
-        local_path = os.path.join(settings.MEDIA_ROOT, 'image', 'system',
+        local_path = os.path.join(settings.MEDIA_ROOT, 'image', 'listings',
             system_id)
         remote_path = os.path.join(settings.BASE_IMAGES_URL,
-            '~%s' % self.cleaned_data['username'], 'system', system_id)
+            '~%s' % self.cleaned_data['username'], 'listings', system_id)
 
         try:
             os.makedirs(local_path)
@@ -80,7 +87,7 @@ class ListingForm(forms.Form):
 
     @property
     def image_url(self):
-        return os.path.join(settings.MEDIA_URL, 'image', 'system',
+        return os.path.join(settings.MEDIA_URL, 'image', 'listings',
             self.cleaned_data['system_id'])
 
 
@@ -97,6 +104,7 @@ def fetch_normal_images(remote_path, local_path, refresh):
     widths = dict(normal_images)
     images = []
 
+    col = 0
     for a in index('img', alt='[IMG]'):
         fn = a.next.find('a')['href']
 
@@ -109,7 +117,8 @@ def fetch_normal_images(remote_path, local_path, refresh):
         local_filename = os.path.join(local_path, fn.lower())
 
         if fn.lower() != 'feature.jpg':
-            images.append(os.path.splitext(fn.lower())[0])
+            images.append((os.path.splitext(fn.lower())[0], col))
+            col = 1 - col
 
         if not os.path.exists(local_filename) or refresh:
             fetch_single_image(remote_filename, local_filename, width)
@@ -117,9 +126,6 @@ def fetch_normal_images(remote_path, local_path, refresh):
     return images
 
 def fetch_single_image(remote_filename, local_filename, width):
-    print remote_filename
-    print local_filename
-    print width
     info = None
     try:
         _, info = urllib.urlretrieve(remote_filename, local_filename)

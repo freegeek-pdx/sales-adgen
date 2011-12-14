@@ -1,16 +1,15 @@
 {% extends "adgen/listing_base.html" %}
 
 {% block images %}
-{% for image in system_images %} 
-    {% cycle "left" "right" as cell %}
-    {% ifequal cell "left" %}
+{% for image, col in system_images %} 
+    {% if col == 0 %}
     <tr>
-    {% endifequal %}
+    {% endif %}
         <td align="center">
-            <a target="_blank" href="{{ image_url }}/{{ image }}.jpg"><img src="{{ image_url }}/{{ image }}_thumb.jpg"></a>
+            <a target="_blank" href="{{ image_url }}/{{ image }}.jpg" border="0"><img src="{{ image_url }}/{{ image }}_thumb.jpg" border="0"></a>
         </td>
-    {% ifequal cell "right" %}
+    {% if col == 1 %}
     </tr>
-    {% endifequal %}
+    {% endif %}
 {% endfor %}
 {% endblock %}
